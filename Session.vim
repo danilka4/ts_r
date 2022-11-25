@@ -16,8 +16,8 @@ endif
 badd +15 lua/ts_r/init.lua
 badd +3 lua/ts_r/meme.lua
 badd +10 ~/Documents/nvim/ts_r/lua/./ts_r/term.lua
-badd +16 ~/Documents/nvim/ts_r/lua/./ts_r/send.lua
-badd +8 ~/scratch.Rmd
+badd +50 ~/Documents/nvim/ts_r/lua/./ts_r/send.lua
+badd +16 ~/scratch.Rmd
 argglobal
 %argdel
 edit lua/ts_r/init.lua
@@ -32,10 +32,6 @@ wincmd _ | wincmd |
 split
 1wincmd k
 wincmd w
-wincmd _ | wincmd |
-vsplit
-1wincmd h
-wincmd w
 let &splitbelow = s:save_splitbelow
 let &splitright = s:save_splitright
 wincmd t
@@ -45,13 +41,11 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 48 + 73) / 147)
+exe 'vert 1resize ' . ((&columns * 73 + 73) / 147)
 exe '2resize ' . ((&lines * 15 + 16) / 33)
-exe 'vert 2resize ' . ((&columns * 98 + 73) / 147)
+exe 'vert 2resize ' . ((&columns * 73 + 73) / 147)
 exe '3resize ' . ((&lines * 15 + 16) / 33)
-exe 'vert 3resize ' . ((&columns * 48 + 73) / 147)
-exe '4resize ' . ((&lines * 15 + 16) / 33)
-exe 'vert 4resize ' . ((&columns * 49 + 73) / 147)
+exe 'vert 3resize ' . ((&columns * 73 + 73) / 147)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -86,12 +80,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 16 - ((8 * winheight(0) + 7) / 15)
+let s:l = 50 - ((2 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 16
-normal! 05|
+keepjumps 50
+normal! 08|
 wincmd w
 argglobal
 if bufexists(fnamemodify("~/scratch.Rmd", ":p")) | buffer ~/scratch.Rmd | else | edit ~/scratch.Rmd | endif
@@ -109,33 +103,19 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 12 - ((9 * winheight(0) + 7) / 15)
+let s:l = 20 - ((5 * winheight(0) + 7) / 15)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 12
-normal! 0
-wincmd w
-argglobal
-enew
-balt ~/scratch.Rmd
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
+keepjumps 20
+normal! 016|
 wincmd w
 2wincmd w
-exe 'vert 1resize ' . ((&columns * 48 + 73) / 147)
+exe 'vert 1resize ' . ((&columns * 73 + 73) / 147)
 exe '2resize ' . ((&lines * 15 + 16) / 33)
-exe 'vert 2resize ' . ((&columns * 98 + 73) / 147)
+exe 'vert 2resize ' . ((&columns * 73 + 73) / 147)
 exe '3resize ' . ((&lines * 15 + 16) / 33)
-exe 'vert 3resize ' . ((&columns * 48 + 73) / 147)
-exe '4resize ' . ((&lines * 15 + 16) / 33)
-exe 'vert 4resize ' . ((&columns * 49 + 73) / 147)
+exe 'vert 3resize ' . ((&columns * 73 + 73) / 147)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
