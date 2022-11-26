@@ -21,18 +21,21 @@ At present there are four functions within this plugin. They are:
 2. `close_term()`: Closes the R terminal
 3. `send_line()`: Sends the current line to the terminal (if the line is spread across multiple LoC it'll send the whole thing)
 4. `send_chunk()`: Specifically for Rmd, sends the whole chunk to the terminal
-**3 and 4 only work if the terminal is open**
+5. `send_selection`: Sends the visual selection to the terminal
+
+**3-5 only work if the terminal is open**
 
 An example configuration for if you don't care if the maps are made regardless of file type.
-```nvim
+```lua
 local ts_r = require('ts_r')
 vim.keymap.set('n', '<leader>r', function() ts_r.open_term() end)
 vim.keymap.set('n', '<leader>q', function() ts_r.close_term() end)
 vim.keymap.set('n', '<leader>l', function() ts_r.send_line() end)
 vim.keymap.set('n', '<leader>c', function() ts_r.send_chunk() end)
+vim.keymap.set('v', '<leader>s', function() ts_r.send_selection() end)
 ```
 To have a terminal open upon entering nvim, add the following:
-```nvim
+```lua
 vim.api.nvim_create_autocmd({'VimEnter'}, {
     callback = function() ts_r.open_term() end,
 })
@@ -41,18 +44,19 @@ vim.api.nvim_create_autocmd({'VimEnter'}, {
 ## Recommended setup
 
 I am currently unaware of a method using `vim.keymap.set` that will allow to pick specific file types, so my recommendation is to create a `ftplugin` directory in `~/.config/nvim` and creating `r.lua` and `rmd.lua` files in them that will load the maps only when editing r/r-adjacent files:
-```nvim
+```lua
 -- ~/.config/nvim/ftplugin/r.lua
 local ts_r = require('ts_r')
 vim.keymap.set('n', '<leader>r', function() ts_r.open_term() end)
 vim.keymap.set('n', '<leader>q', function() ts_r.close_term() end)
 vim.keymap.set('n', '<leader>l', function() ts_r.send_line() end)
+vim.keymap.set('v', '<leader>s', function() ts_r.send_selection() end)
 vim.api.nvim_create_autocmd({'VimEnter'}, {
     --pattern = {"*.r", "*.rmd"},
     callback = function() ts_r.open_term() end,
 })
 ```
-```nvim
+```lua
 local ts_r = require('ts_r')
 vim.cmd.source("~/.config/nvim/ftplugin/r.lua") -- Yoinks the above commands for rmd
 vim.keymap.set('n', '<leader>c', function() ts_r.send_chunk() end)

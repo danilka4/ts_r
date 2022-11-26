@@ -4,7 +4,7 @@ local locals = require("nvim-treesitter.locals")
 local v = vim
 local M = {}
 
-local function send_to_term ()
+M.send_selection = function()
     -- Yanks to r register
     v.cmd('norm "ry')
     -- Sends contents of r register to the terminal
@@ -40,13 +40,6 @@ M.send_line = function()
     if node == nil then
         error("Select inside chunk please")
     end
-    --if (in_function()) then
-    --    while (node:parent() ~= nil and node:type() ~= "function_definition")  do
-    --        node = node:parent()
-    --    end
-    --end
-    -- (node:parent():type() ~= "binary" and node:parent():type() ~= "equals_assignment" and node:parent():type() ~= "left_assignment")
-    --while (node:parent() ~= nil and node:type() ~= "binary" and node:type() ~= "left_assignment" and node:type() ~= "equals_assignment" and node:type() ~= "call") do
     while (node:parent() ~= nil and  node:parent() ~= ts_utils.get_root_for_node(node)) do
         node = node:parent()
     end
@@ -56,7 +49,9 @@ M.send_line = function()
     if chanid == -1 then
         error("Start the terminal please")
     else
-        send_to_term()
+        M.send_selection()
+        local _, _, end_row, _ = node:range()
+        vim.api.nvim_win_set_cursor(0, {end_row + 2, 0})
     end
 end
 
@@ -74,7 +69,7 @@ M.send_chunk = function()
     if chanid == -1 then
         error("Start the terminal please")
     else
-        send_to_term()
+        M.send_selection()
     end
 end
 
