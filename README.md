@@ -57,6 +57,7 @@ vim.api.nvim_create_autocmd({'VimEnter'}, {
 })
 ```
 ```lua
+-- ~/.config/nvim/ftplugin/rmd.lua
 local ts_r = require('ts_r')
 vim.cmd.source("~/.config/nvim/ftplugin/r.lua") -- Yoinks the above commands for rmd
 vim.keymap.set('n', '<leader>c', function() ts_r.send_chunk() end)
