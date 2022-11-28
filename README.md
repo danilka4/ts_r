@@ -21,7 +21,7 @@ At present there are four functions within this plugin. They are:
 2. `close_term()`: Closes the R terminal
 3. `send_line()`: Sends the current line to the terminal (if the line is spread across multiple LoC it'll send the whole thing)
 4. `send_chunk()`: Specifically for Rmd, sends the whole chunk to the terminal
-5. `send_selection`: Sends the visual selection to the terminal
+5. `send_selection()`: Sends the visual selection to the terminal
 
 **3-5 only work if the terminal is open**
 

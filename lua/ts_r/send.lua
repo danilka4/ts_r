@@ -51,7 +51,8 @@ M.send_line = function()
     else
         M.send_selection()
         local _, _, end_row, _ = node:range()
-        vim.api.nvim_win_set_cursor(0, {end_row + 2, 0})
+        v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
+        {math.min(end_row + 2, vim.api.nvim_buf_line_count(0)), 0})
     end
 end
 
