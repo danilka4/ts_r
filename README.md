@@ -10,20 +10,22 @@ The only plugin needed is [nvim-treesitter](https://github.com/nvim-treesitter/n
 
 Install using your favorite package manager. I use Vim-Plug:
 ```vim
-Plug 'danilka4/ts_r'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'danilka4/ts_r'
 ```
 
 # Usage
 
-At present there are four functions within this plugin. They are:
+At present there are the following functions within this plugin:
 1. `open_term()`: Opens a terminal with R
 2. `close_term()`: Closes the R terminal
 3. `send_line()`: Sends the current line to the terminal (if the line is spread across multiple LoC it'll send the whole thing)
 4. `send_chunk()`: Specifically for Rmd, sends the whole chunk to the terminal
 5. `send_selection()`: Sends the visual selection to the terminal
+6. `install_package()`: Asks for a package name and installs it
+7. `install_git()`: Asks for a git repository and installs it
+8. `save_image()`: Saves the image with a given name
 
-**3-5 only work if the terminal is open**
 
 An example configuration for if you don't care if the maps are made regardless of file type.
 ```lua
@@ -33,6 +35,9 @@ vim.keymap.set('n', '<leader>q', function() ts_r.close_term() end)
 vim.keymap.set('n', '<leader>l', function() ts_r.send_line() end)
 vim.keymap.set('n', '<leader>c', function() ts_r.send_chunk() end)
 vim.keymap.set('v', '<leader>s', function() ts_r.send_selection() end)
+vim.keymap.set('n', '<leader>ip', function() ts_r.install_package() end)
+vim.keymap.set('n', '<leader>ig', function() ts_r.install_git() end)
+vim.keymap.set('n', '<leader>is', function() ts_r.save_image() end)
 ```
 To have a terminal open upon entering nvim, add the following:
 ```lua
@@ -51,6 +56,9 @@ vim.keymap.set('n', '<leader>r', function() ts_r.open_term() end)
 vim.keymap.set('n', '<leader>q', function() ts_r.close_term() end)
 vim.keymap.set('n', '<leader>l', function() ts_r.send_line() end)
 vim.keymap.set('v', '<leader>s', function() ts_r.send_selection() end)
+vim.keymap.set('n', '<leader>ip', function() ts_r.install_package() end)
+vim.keymap.set('n', '<leader>ig', function() ts_r.install_git() end)
+vim.keymap.set('n', '<leader>is', function() ts_r.save_image() end)
 vim.api.nvim_create_autocmd({'VimEnter'}, {
     --pattern = {"*.r", "*.rmd"},
     callback = function() ts_r.open_term() end,

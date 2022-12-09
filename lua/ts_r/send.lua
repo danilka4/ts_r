@@ -4,13 +4,16 @@ local locals = require("nvim-treesitter.locals")
 local v = vim
 local M = {}
 
+local send_to_terminal = function (content_to_send)
+    v.fn.chansend(term.chanid, content_to_send)
+    -- Hacky way to get the last newline
+    v.fn.chansend(term.chanid, {"",""})
+end
+
 M.send_selection = function()
     -- Yanks to r register
     v.cmd('norm "ry')
-    -- Sends contents of r register to the terminal
-    v.fn.chansend(term.chanid, v.fn.getreg('r'))
-    -- Hacky way to get the last newline
-    v.fn.chansend(term.chanid, {"",""})
+    send_to_terminal(v.fn.getreg('r'))
 end
 
 -- For some reason r syntax trees have = and <- as separate
@@ -52,7 +55,7 @@ M.send_line = function()
         M.send_selection()
         local _, _, end_row, _ = node:range()
         v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
-        {math.min(end_row + 2, vim.api.nvim_buf_line_count(0)), 0})
+        {math.min(end_row + 2, v.api.nvim_buf_line_count(0)), 0})
     end
 end
 
@@ -72,6 +75,30 @@ M.send_chunk = function()
     else
         M.send_selection()
     end
+end
+
+M.install_package = function ()
+    if term.chanid == -1 then
+        error("Start the terminal please")
+    end
+    local package = v.fn.input("Name of Package: ")
+    send_to_terminal('install.packages("' .. package .. '", repos="https://cran.us.r-project.org")')
+end
+
+M.install_git = function ()
+    if term.chanid == -1 then
+        error("Start the terminal please")
+    end
+    local rep = v.fn.input("Name of Repository: ")
+    send_to_terminal('devtools::install_github("' .. rep .. '")')
+end
+
+M.save_image = function ()
+    if term.chanid == -1 then
+        error("Start the terminal please")
+    end
+    local name = v.fn.input("Name of Image: ")
+    send_to_terminal('ggplot2::ggsave("' .. name .. '.png", bg = "white")')
 end
 
 return M
