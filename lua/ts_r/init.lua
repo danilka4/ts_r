@@ -12,6 +12,7 @@ M.close_term = term.close_term
 M.send_line = send.send_line
 M.send_chunk = send.send_chunk
 M.send_selection = send.send_selection
+M.send_all = send.send_all
 M.install_package = send.install_package
 M.install_git = send.install_git
 M.save_image = send.save_image
