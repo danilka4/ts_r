@@ -12,11 +12,13 @@ end
 
 -- Checks to see whether the cursor is currently inside a chunk
 local in_chunk = function (node)
+    local node = ts_utils.get_node_at_cursor()
     while node ~= nil do
-        if node:type() == "fenced_code_block" or node:type() == "code_fence_content" or node:type() == "left_assignment" or node:type() == "equals_assignment" then
+        if node:type() == "fenced_code_block" or node:type() == "code_fence_content" or node:type() == "left_assignment" or node:type() == "equals_assignment" or node:type() == "call" or node:type() == "comment" then
             return true
+        else
+            node = node:parent()
         end
-        node = node:parent()
     end
     return false
 end
@@ -54,8 +56,11 @@ M.send_chunk = function()
     local node = ts_utils.get_node_at_cursor()
 
     -- Checks to see if the node is valid and inside the chunk
-    if node == nil or not in_chunk(node) then
-        error("Select inside chunk please")
+    if node == nil then
+        error("Node is null")
+    end
+    if not in_chunk(node) then
+        error("Not inside a chunk")
     end
 
     -- Checks to see if the terminal is running
