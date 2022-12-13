@@ -12,9 +12,8 @@ end
 
 -- Checks to see whether the cursor is currently inside a chunk
 local in_chunk = function (node)
-    node = ts_utils.get_node_at_cursor()
     while node ~= nil do
-        if node:type() == "fenced_code_block" then
+        if node:type() == "fenced_code_block" or node:type() == "code_fence_content" or node:type() == "left_assignment" or node:type() == "equals_assignment" then
             return true
         end
         node = node:parent()
