@@ -32,8 +32,12 @@ end
 
 M.send_line = function()
     local node = ts_utils.get_node_at_cursor()
+    -- Checks to see if the node is valid and inside the chunk
     if node == nil then
-        error("Select inside chunk please")
+        error("Node is null")
+    end
+    if not in_chunk(node) then
+        error("Not inside a chunk")
     end
     while (node:parent() ~= nil and  node:parent() ~= ts_utils.get_root_for_node(node)) do
         node = node:parent()
