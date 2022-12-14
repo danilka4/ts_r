@@ -22,7 +22,7 @@ At present there are the following functions within this plugin:
 3. `send_line()`: Sends the current line to the terminal (if the line is spread across multiple LoC it'll send the whole thing)
 4. `send_chunk()`: Specifically for Rmd, sends the whole chunk to the terminal
 5. `send_selection()`: Sends the visual selection to the terminal
-6. `send_all()`: Sends the entire file to the R terminal
+6. `send_all()`: Sends the entire file to the R terminal. Differentiates between r and rmd
 7. `install_package()`: Asks for a package name and installs it
 8. `install_git()`: Asks for a git repository and installs it
 9. `save_image()`: Saves the image with a given name
@@ -36,6 +36,7 @@ vim.keymap.set('n', '<leader>r', function() ts_r.open_term() end)
 vim.keymap.set('n', '<leader>q', function() ts_r.close_term() end)
 vim.keymap.set('n', '<leader>l', function() ts_r.send_line() end)
 vim.keymap.set('n', '<leader>c', function() ts_r.send_chunk() end)
+vim.keymap.set('n', '<leader>a', function() ts_r.send_all() end)
 vim.keymap.set('v', '<leader>s', function() ts_r.send_selection() end)
 vim.keymap.set('n', '<leader>ip', function() ts_r.install_package() end)
 vim.keymap.set('n', '<leader>ig', function() ts_r.install_git() end)
@@ -59,6 +60,7 @@ local ts_r = require('ts_r')
 vim.keymap.set('n', '<leader>r', function() ts_r.open_term() end)
 vim.keymap.set('n', '<leader>q', function() ts_r.close_term() end)
 vim.keymap.set('n', '<leader>l', function() ts_r.send_line() end)
+vim.keymap.set('n', '<leader>a', function() ts_r.send_all() end)
 vim.keymap.set('v', '<leader>s', function() ts_r.send_selection() end)
 vim.keymap.set('n', '<leader>ip', function() ts_r.install_package() end)
 vim.keymap.set('n', '<leader>ig', function() ts_r.install_git() end)
@@ -81,5 +83,10 @@ vim.keymap.set('n', '<leader>p', function() ts_r.move_chunk_up() end)
 
 Let me know if there arises any interesting behavior.
 
-The only confusing behavior I found was that the `autocmd` did not work with the `pattern` line.
+Some things I found:
+
+The `autocmd` did not work with the `pattern` line.
 The terminal refused to open under that specific setup, which is why I added it to the ftplugin files.
+
+Sometimes when sending a chunk from the left-most \` in the bottom fence of a chunk, treesitter does not recognize that \` as being a part of the chunk.
+I have no idea why it does this.
