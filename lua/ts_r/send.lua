@@ -1,5 +1,6 @@
 local term = require("ts_r.term")
 local ts_utils = require("nvim-treesitter.ts_utils")
+local h = require("ts_r.helper")
 local v = vim
 local M = {}
 
@@ -8,19 +9,6 @@ local send_to_terminal = function (content_to_send)
     v.fn.chansend(term.chanid, content_to_send)
     -- Hacky way to get the last newline
     v.fn.chansend(term.chanid, {"",""})
-end
-
--- Checks to see whether the cursor is currently inside a chunk
-local in_chunk = function (node)
-    local node = ts_utils.get_node_at_cursor()
-    while node ~= nil do
-        if node:type() == "fenced_code_block" or node:type() == "code_fence_content" or node:type() == "left_assignment" or node:type() == "equals_assignment" or node:type() == "call" or node:type() == "comment" then
-            return true
-        else
-            node = node:parent()
-        end
-    end
-    return false
 end
 
 -- Yanks to the r register and sends that register to the terminal
@@ -36,7 +24,7 @@ M.send_line = function()
     if node == nil then
         error("Node is null")
     end
-    if not in_chunk(node) then
+    if not h.in_chunk(node) then
         error("Not inside a chunk")
     end
     while (node:parent() ~= nil and  node:parent() ~= ts_utils.get_root_for_node(node)) do
@@ -63,7 +51,7 @@ M.send_chunk = function()
     if node == nil then
         error("Node is null")
     end
-    if not in_chunk(node) then
+    if not h.in_chunk(node) then
         error("Not inside a chunk")
     end
 
@@ -72,6 +60,7 @@ M.send_chunk = function()
         error("Start the terminal please")
     end
 
+    node = h.engulf_chunk(node)
     -- Checks to see if the cursor is hovering over the chunk language type
     --  This is because of some nesting bs within R's syntax tree
     if node:type() == "language" then
