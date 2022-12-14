@@ -8,7 +8,7 @@ local find_fence = function (flags)
     -- Maybe use setpos and search?
     local node = ts_utils.get_node_at_cursor()
     local jump_pos = 0
-    local start_row, end_row
+    local start_row, end_row = 0, 0
     if node == nil then
         error("Node is null")
     end
@@ -28,22 +28,24 @@ local find_fence = function (flags)
     -- Positional corrections if at beginning or end
     if jump_pos == 0 and string.match(flags, "b") then
         v.cmd("norm j")
-    elseif jump_pos == 0 then
+    end
+    if jump_pos == 0 and not string.match(flags, "b") then
         v.api.nvim_win_set_cursor(0, {start_row, 0})
     end
 
     v.cmd("norm j") -- Places user inside chunk
+    print(jump_pos == 0)
 
     -- Return if at start/end of the file
     return jump_pos ~= 0
 end
 
 M.move_chunk_down = function ()
-    find_fence('Wc')
+    return find_fence('Wc')
 end
 
 M.move_chunk_up = function ()
-    find_fence('bWc')
+    return find_fence('bWc')
 end
 
 return M

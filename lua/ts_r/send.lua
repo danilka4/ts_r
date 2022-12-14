@@ -1,6 +1,7 @@
 local term = require("ts_r.term")
 local ts_utils = require("nvim-treesitter.ts_utils")
 local h = require("ts_r.helper")
+local move = require("ts_r.move")
 local v = vim
 local M = {}
 
@@ -61,26 +62,6 @@ M.send_chunk = function()
     end
 
     node = h.engulf_chunk(node)
-    -- Checks to see if the cursor is hovering over the chunk language type
-    --  This is because of some nesting bs within R's syntax tree
-    if node:type() == "language" then
-        node = node:parent()
-    end
-
-    -- This triggers when the cursor is in the fencing part of the chunk (```)
-    if node:parent():type() == "fenced_code_block" then
-        local nodes = ts_utils.get_named_children(node:parent())
-        for _, val in pairs(nodes) do
-            if val:type() == "code_fence_content" then
-                node = val
-            end
-        end
-    -- This triggers when inside the code chunk itself
-    else
-        while (node:parent() ~= nil and node:type() ~= "code_fence_content")  do
-            node = node:parent()
-        end
-    end
 
     -- Highlights and sends to the terminal
     local bufnr = v.api.nvim_get_current_buf()
@@ -88,21 +69,24 @@ M.send_chunk = function()
     M.send_selection()
     local _, _, end_row, _ = node:range()
     v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
-    {math.min(end_row + 2, v.api.nvim_buf_line_count(0)), 0})
+    {math.min(end_row, v.api.nvim_buf_line_count(0)), 0})
 end
 
 M.send_all = function ()
     local filetype = v.bo.filetype
+    local cursor = v.api.nvim_win_get_cursor(0)
     if filetype == "r" then
-        local cursor = v.api.nvim_win_get_cursor(0)
         v.cmd("norm ggVG")
         M.send_selection()
-        v.api.nvim_win_set_cursor(0, cursor)
     elseif filetype == "rmd" then
-        print("TODO: Add 'all' functionality to rmd")
+        v.cmd("norm gg")
+        while move.move_chunk_down() do
+            M.send_chunk()
+        end
     else
         error("Not an R file")
     end
+    v.api.nvim_win_set_cursor(0, cursor)
 end
 
 M.install_package = function ()
