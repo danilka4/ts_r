@@ -1,6 +1,7 @@
 -- Imports separate modules
 local term = require"ts_r.term"
 local send = require"ts_r.send"
+local move = require"ts_r.move"
 
 local M = {}
 
@@ -16,6 +17,10 @@ M.send_all = send.send_all
 M.install_package = send.install_package
 M.install_git = send.install_git
 M.save_image = send.save_image
+
+-- Functions for moving between chunks
+M.move_chunk_down = move.move_chunk_down
+M.move_chunk_up = move.move_chunk_up
 
 --vim.keymap.set("n", "<leader>r", M.open_term())
 
