@@ -13,6 +13,8 @@ M.open_term = function()
         v.cmd('norm G')
         v.cmd('0resize +5')
         v.cmd('wincmd k')
+    else
+        error("A terminal is already open")
     end
 end
 
@@ -21,6 +23,9 @@ M.close_term = function()
     if M.winid ~= -1 then
         v.api.nvim_win_close(M.winid, 1)
         M.winid = -1
+        M.chanid = -1
+    else
+        error("There is no open terminal")
     end
 end
 
