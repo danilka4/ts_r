@@ -47,6 +47,7 @@ end
 -- Highlights and sends a chunk of code
 M.send_chunk = function()
     local node = ts_utils.get_node_at_cursor()
+    local cursor = v.api.nvim_win_get_cursor(0)
 
     -- Checks to see if the node is valid and inside the chunk
     if node == nil then
@@ -67,11 +68,13 @@ M.send_chunk = function()
     local bufnr = v.api.nvim_get_current_buf()
     ts_utils.update_selection(bufnr, node)
     M.send_selection()
-    local _, _, end_row, _ = node:range()
-    v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
-    {math.min(end_row, v.api.nvim_buf_line_count(0)), 0})
+    v.api.nvim_win_set_cursor(0, cursor)
+    --local _, _, end_row, _ = node:range()
+    --v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
+    --{math.min(end_row, v.api.nvim_buf_line_count(0)), 0})
 end
 
+-- Sends all R code/code chunks to the terminal
 M.send_all = function ()
     local filetype = v.bo.filetype
     local cursor = v.api.nvim_win_get_cursor(0)
@@ -89,6 +92,25 @@ M.send_all = function ()
     v.api.nvim_win_set_cursor(0, cursor)
 end
 
+-- Opens a man page for the highlighted word
+M.man_entry = function ()
+    if term.chanid == -1 then
+        error("Start the terminal please")
+    else
+        -- Sends "?<cmd>" to the terminal, which is R speak
+        --  for opening up the man page for "<cmd>"
+        v.cmd("norm viw")
+        v.fn.chansend(term.chanid, "?")
+        M.send_selection()
+
+        -- Switches into the terminal so user can navigate
+        --  the man page
+        v.cmd("wincmd" .. term.chanid .. " w")
+        v.cmd("normal i")
+    end
+end
+
+-- Installs an R package from the cran library
 M.install_package = function ()
     if term.chanid == -1 then
         error("Start the terminal please")
@@ -98,6 +120,7 @@ M.install_package = function ()
     end
 end
 
+-- Installs an R package from a github repo
 M.install_git = function ()
     if term.chanid == -1 then
         error("Start the terminal please")
@@ -107,6 +130,7 @@ M.install_git = function ()
     end
 end
 
+-- Saves the current plot on a white background
 M.save_image = function ()
     if term.chanid == -1 then
         error("Start the terminal please")

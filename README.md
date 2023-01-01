@@ -23,10 +23,11 @@ At present there are the following functions within this plugin:
 4. `send_chunk()`: Specifically for Rmd, sends the whole chunk to the terminal
 5. `send_selection()`: Sends the visual selection to the terminal
 6. `send_all()`: Sends the entire file to the R terminal. Differentiates between r and rmd
-7. `install_package()`: Asks for a package name and installs it
-8. `install_git()`: Asks for a git repository and installs it
-9. `save_image()`: Saves the image with a given name
-10. `move_chunk_down/up`: Moves the user a chunk up or down from their current one (or to the chunk above/below them)
+7. `man_entry()`: Opens up man page for object under cursor
+8. `install_package()`: Asks for a package name and installs it
+9. `install_git()`: Asks for a git repository and installs it
+10. `save_image()`: Saves the image with a given name
+11. `move_chunk_down/up`: Moves the user a chunk up or down from their current one (or to the chunk above/below them)
 
 
 An example configuration for if you don't care if the maps are made regardless of file type.
@@ -62,6 +63,9 @@ vim.keymap.set('n', '<leader>q', function() ts_r.close_term() end)
 vim.keymap.set('n', '<leader>l', function() ts_r.send_line() end)
 vim.keymap.set('n', '<leader>a', function() ts_r.send_all() end)
 vim.keymap.set('v', '<leader>s', function() ts_r.send_selection() end)
+-- man_entry sends the user to the terminal to look at the man page
+--  I recommend having keymaps to make window navigation easy
+vim.keymap.set('n', 'K', function() ts_r.man_entry() end)
 vim.keymap.set('n', '<leader>ip', function() ts_r.install_package() end)
 vim.keymap.set('n', '<leader>ig', function() ts_r.install_git() end)
 vim.keymap.set('n', '<leader>is', function() ts_r.save_image() end)
