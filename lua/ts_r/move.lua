@@ -34,7 +34,6 @@ local find_fence = function (flags)
     end
 
     v.cmd("norm j") -- Places user inside chunk
-    print(jump_pos == 0)
 
     -- Return if at start/end of the file
     return jump_pos ~= 0

@@ -35,7 +35,7 @@ M.send_line = function()
     if not h.in_chunk(node) then
         error("Not inside a chunk")
     end
-    while (node:parent() ~= nil and  node:parent() ~= ts_utils.get_root_for_node(node)) do
+    while (node:parent() ~= nil and  node:parent() ~= ts_utils.get_root_for_node(node) and node:type() ~= "code_fence_content") do
         node = node:parent()
     end
     local bufnr = v.api.nvim_get_current_buf()
