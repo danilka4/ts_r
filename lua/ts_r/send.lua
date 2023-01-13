@@ -90,10 +90,16 @@ M.send_all = function ()
         v.cmd("norm ggVG")
         M.send_selection()
     elseif filetype == "rmd" then
-        v.cmd("norm gg")
-        while move.move_chunk_down() do
-            M.send_chunk()
+        local fence_content = "((code_fence_content) @code_fence_content)"
+        local parser = require("nvim-treesitter.parsers").get_parser()
+        local query = v.treesitter.query.parse_query(parser:lang(), fence_content)
+        local tree = parser:parse()[1]
+        local text = ""
+        for _, n in query:iter_captures(tree:root(), 0) do
+            local line = v.treesitter.query.get_node_text(n, 0)
+            text = text .. line .. "\n"
         end
+        v.fn.chansend(term.chanid, text)
     else
         error("Not an R file")
     end
