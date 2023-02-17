@@ -4,7 +4,7 @@ M = {}
 -- Checks to see whether the cursor is currently inside a chunk
 M.in_chunk = function (node)
     while node ~= nil do
-        if node:type() == "fenced_code_block" or node:type() == "code_fence_content" or node:type() == "left_assignment" or node:type() == "equals_assignment" or node:type() == "call" or node:type() == "comment" then
+        if node:type() == "fenced_code_block" or node:type() == "code_fence_content" or node:type() == "left_assignment" or node:type() == "equals_assignment" or node:type() == "call" or node:type() == "comment" or node:type() == "subset" then
             return true
         else
             node = node:parent()
