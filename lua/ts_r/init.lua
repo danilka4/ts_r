@@ -18,6 +18,7 @@ M.man_entry = send.man_entry
 M.install_package = send.install_package
 M.install_git = send.install_git
 M.save_image = send.save_image
+M.knit_doc = send.knit_doc
 
 -- Functions for moving between chunks
 M.move_chunk_down = move.move_chunk_down

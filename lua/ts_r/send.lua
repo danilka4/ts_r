@@ -1,15 +1,14 @@
 local term = require("ts_r.term")
 local ts_utils = require("nvim-treesitter.ts_utils")
 local h = require("ts_r.helper")
-local move = require("ts_r.move")
 local v = vim
 local M = {}
 
 -- Sends text to the terminal started in ts_r.term
-local send_to_terminal = function (content_to_send)
+local send_to_terminal = function(content_to_send)
     v.fn.chansend(term.chanid, content_to_send)
     -- Hacky way to get the last newline
-    v.fn.chansend(term.chanid, {"",""})
+    v.fn.chansend(term.chanid, { "", "" })
 end
 
 -- Yanks to the r register and sends that register to the terminal
@@ -26,25 +25,24 @@ end
 M.send_line = function()
     if term.winid == -1 then
         error("Start the terminal please")
-    else
+    end
     local node = ts_utils.get_node_at_cursor()
     -- Checks to see if the node is valid and inside the chunk
     if node == nil then
         error("Node is null")
     end
-    if not h.in_chunk(node) then
-        error("Not inside a chunk")
-    end
-    while (node:parent() ~= nil and  node:parent() ~= ts_utils.get_root_for_node(node) and node:type() ~= "code_fence_content") do
+    -- if not h.in_chunk(node) then
+    --     error("Not inside a chunk")
+    -- end
+    while (node:parent() ~= nil and node:parent() ~= ts_utils.get_root_for_node(node) and node:type() ~= "code_fence_content") do
         node = node:parent()
     end
     local bufnr = v.api.nvim_get_current_buf()
     ts_utils.update_selection(bufnr, node)
-        M.send_selection()
-        local _, _, end_row, _ = node:range()
-        v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
-        {math.min(end_row + 2, v.api.nvim_buf_line_count(0)), 0})
-    end
+    M.send_selection()
+    local _, _, end_row, _ = node:range()
+    v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
+        { math.min(end_row + 2, v.api.nvim_buf_line_count(0)), 0 })
 end
 
 -- Highlights and sends a chunk of code
@@ -54,32 +52,31 @@ M.send_chunk = function()
         error("Start the terminal please")
     end
 
-    local node = ts_utils.get_node_at_cursor()
+    --local node = ts_utils.get_node_at_cursor()
     local cursor = v.api.nvim_win_get_cursor(0)
 
     -- Checks to see if the node is valid and inside the chunk
-    if node == nil then
-        error("Node is null")
-    end
-    if not h.in_chunk(node) then
-        error("Not inside a chunk")
-    end
-
-
-    node = h.engulf_chunk(node)
-
-    -- Highlights and sends to the terminal
+    -- if not h.in_chunk(node) then
+    --     error("Not inside a chunk")
+    -- end
     local bufnr = v.api.nvim_get_current_buf()
+    local lang = require("nvim-treesitter.parsers").get_buf_lang(bufnr)
+
+    local node = ts_utils.get_node_at_cursor()
+    node = h.engulf_chunk(node)
     ts_utils.update_selection(bufnr, node)
+
     M.send_selection()
-    v.api.nvim_win_set_cursor(0, cursor)
-    --local _, _, end_row, _ = node:range()
-    --v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
-    --{math.min(end_row, v.api.nvim_buf_line_count(0)), 0})
+    if node ~= nil then
+        v.api.nvim_win_set_cursor(0, cursor)
+        local _, _, end_row, _ = node:range()
+        v.api.nvim_win_set_cursor(0, -- Sets cursor to next line, unless last line in file
+            { math.min(end_row, v.api.nvim_buf_line_count(0)), 0 })
+    end
 end
 
 -- Sends all R code/code chunks to the terminal
-M.send_all = function ()
+M.send_all = function()
     -- Checks to see if the terminal is running
     if term.winid == -1 then
         error("Start the terminal please")
@@ -107,7 +104,7 @@ M.send_all = function ()
 end
 
 -- Opens a man page for the highlighted word
-M.man_entry = function ()
+M.man_entry = function()
     if term.winid == -1 then
         error("Start the terminal please")
     end
@@ -124,7 +121,7 @@ M.man_entry = function ()
 end
 
 -- Installs an R package from the cran library
-M.install_package = function ()
+M.install_package = function()
     if term.winid == -1 then
         error("Start the terminal please")
     end
@@ -133,7 +130,7 @@ M.install_package = function ()
 end
 
 -- Installs an R package from a github repo
-M.install_git = function ()
+M.install_git = function()
     if term.winid == -1 then
         error("Start the terminal please")
     end
@@ -142,12 +139,20 @@ M.install_git = function ()
 end
 
 -- Saves the current plot on a white background
-M.save_image = function ()
+M.save_image = function()
     if term.winid == -1 then
         error("Start the terminal please")
     end
     local name = v.fn.input("Name of Image: ")
     send_to_terminal('ggplot2::ggsave("' .. name .. '.png", bg = "white")')
+end
+
+M.knit_doc = function()
+    if term.winid == -1 then
+        error("Start the terminal please")
+    end
+    local file = v.fn.expand('%')
+    send_to_terminal('rmarkdown::render("' .. file .. '")')
 end
 
 return M

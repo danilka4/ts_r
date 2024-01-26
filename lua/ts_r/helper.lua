@@ -1,3 +1,4 @@
+local locals = require "nvim-treesitter.locals"
 local ts_utils = require("nvim-treesitter.ts_utils")
 M = {}
 
@@ -22,7 +23,7 @@ M.engulf_chunk = function(node)
     end
 
     -- This triggers when the cursor is in the fencing part of the chunk (```)
-    if node:parent():type() == "fenced_code_block" then
+    if node:parent() ~= nil and node:parent():type() == "fenced_code_block" then
         local nodes = ts_utils.get_named_children(node:parent())
         for _, val in pairs(nodes) do
             if val:type() == "code_fence_content" then
@@ -32,7 +33,9 @@ M.engulf_chunk = function(node)
     -- This triggers when inside the code chunk itself
     else
         while (node:parent() ~= nil and node:type() ~= "code_fence_content")  do
-            node = node:parent()
+            if node ~= nil then
+                node = locals.containing_scope(node:parent() or node)
+            end
         end
     end
     return node
